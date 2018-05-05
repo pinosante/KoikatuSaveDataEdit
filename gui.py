@@ -4,6 +4,7 @@ import argparse
 import json
 import io
 import codecs
+import shutil
 from pathlib import Path
 
 import tkinter as tk
@@ -44,7 +45,7 @@ class PropertyPanel(ttk.Frame):
         label3.grid(row=1, column=0, sticky='E', columnspan=1)
         entry3.grid(row=1, column=1, sticky='W', columnspan=1)
 
-        values = ('Male', 'Female')
+        values = (res('male'), res('Female'))
         label4 = ttk.Label(self, text=res('sex'))
         self._sex = tk.StringVar(value=values[character.sex])
         entry4 = ttk.Combobox(self, values=values,
@@ -94,7 +95,7 @@ class PropertyPanel(ttk.Frame):
 
     @property
     def sex(self):
-        return ['Male', 'Female'].findself.sex.get()
+        return [res('male'), res('female')].findself.sex.get()
 
     @property
     def answers(self):
@@ -211,8 +212,9 @@ class CharacterPanel(ttk.Frame):
 
 
 class App:
-    def __init__(self, filename):
+    def __init__(self, filename, out_filename):
         self.filename = filename
+        self.out_filename = out_filename
         self.save_data = KoikatuSaveData(filename)
         self.card_dir = Path.cwd()
 
@@ -222,8 +224,8 @@ class App:
         style = ttk.Style()
         style.configure('.', padding='2 4 2 4')
 
-        width = 720
-        height = 320 * 3 + 4
+        width = 680
+        height = 320 * 3 + 12
         self.root.geometry(f'{width}x{height}')
 
         frame = VerticalScrolledFrame(self.root)
@@ -232,30 +234,41 @@ class App:
             panel = CharacterPanel(self, frame.interior, chara)
             panel.pack()
             self.panels.append(panel)
-        frame.pack(side='top')
+        frame.grid(row=0, column=0)
 
         btn_frame = ttk.Frame(self.root)
-        save_btn = ttk.Button(btn_frame, text='Save & Quit', command=self.save)
+        save_btn = ttk.Button(btn_frame, text='Save & Quit', command=self.save_and_quit)
         quit_btn = ttk.Button(btn_frame, text='Quit', command=self.root.destroy)
         quit_btn.pack(side='right', pady=2)
         save_btn.pack(side='right', pady=2)
-        btn_frame.pack(side='bottom')
+        btn_frame.grid(row=1, column=0, pady=2, sticky='E')
 
         def _configure(event):
-            frame.canvas.config(height=self.root.winfo_height() - save_btn.winfo_height() - 4)
+            h = 320 * 3 - 20
+            frame.canvas.config(height=h)
 
         self.root.bind('<Configure>', _configure)
 
-    def withdraw(self):
-        self.root.withdraw()
 
-    def save(self, *args):
+    def save(self):
         for i, panel in enumerate(self.panels):
             chara = panel.character
             if panel.dirty:
                 self.save_data.replace(i, chara)
-        self.save_data.save(self.filename + '_02.dat')
+        
+        if self.filename == self.out_filename:
+            # create backup
+            path = Path(self.filename).resolve()
+            backup = path.parent / (path.stem + '.old.dat')
+            shutil.copy(self.filename, backup)
+        
+        self.save_data.save(self.out_filename)
+
+
+    def save_and_quit(self, *args):
+        self.save()
         self.root.destroy()
+
 
     def run(self):
         self.root.mainloop()
@@ -264,14 +277,23 @@ class App:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('save_data')
+    parser.add_argument('save_data',
+                        help='koikatu save data')
+    parser.add_argument('-o', dest='output',
+                        help='output file')
     parser.add_argument('-r',
                         dest='resources',
-                        default='resources_ja.json')
+                        default='resources_ja.json',
+                        help='resource file name')
 
     args = parser.parse_args()
+
+    if args.output is not None:
+        out_filename = args.output
+    else:
+        out_filename = args.save_data
 
     with codecs.open(args.resources, 'r', 'utf-8') as jsonfile:
         RES = json.load(jsonfile)
 
-    App(args.save_data).run()
+    App(args.save_data, out_filename).run()
