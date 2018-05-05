@@ -319,14 +319,15 @@ def main():
     else:
         save_data = askopenfilename(filetype=[("koikatu save data", "*.dat")],
                                     initialdir=Path.cwd())
-        if save_data is None:
+        print(save_data)
+        if save_data is None or len(save_data) == 0:
+            root.destroy()
             sys.exit(-1)
 
         out_filename = save_data
         resources = default_resource
 
     Resource.load(resources)
-
     App(root, save_data, out_filename).run()
 
 
