@@ -222,6 +222,8 @@ class CharacterPanel(ttk.Frame):
             with open(name, 'rb') as infile:
                 chara = KoikatuCharacter(infile, True)
                 self._update_character(chara)
+        else:
+            self.quit()
 
 
 class App:
@@ -249,7 +251,7 @@ class App:
 
         btn_frame = ttk.Frame(self.root)
         save_btn = ttk.Button(btn_frame, text='Save & Quit', command=self.save_and_quit)
-        quit_btn = ttk.Button(btn_frame, text='Quit', command=self.root.destroy)
+        quit_btn = ttk.Button(btn_frame, text='Quit', command=self.quit)
         quit_btn.pack(side='right', pady=2)
         save_btn.pack(side='right', pady=2)
         btn_frame.grid(row=1, column=0, pady=2, sticky='E')
@@ -278,6 +280,9 @@ class App:
 
     def save_and_quit(self, *args):
         self.save()
+        self.root.destroy()
+
+    def quit(self, *args):
         self.root.destroy()
 
 
