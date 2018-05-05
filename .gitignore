@@ -1,0 +1,5 @@
+*.png
+*.dat
+__pycache__/
+.vscode
+cards/
