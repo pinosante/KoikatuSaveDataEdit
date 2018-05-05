@@ -5,6 +5,7 @@ import json
 import io
 import codecs
 import shutil
+import sys
 from pathlib import Path
 
 import tkinter as tk
@@ -212,14 +213,12 @@ class CharacterPanel(ttk.Frame):
 
 
 class App:
-    def __init__(self, filename, out_filename):
+    def __init__(self, root, filename, out_filename):
+        self.root = root
         self.filename = filename
         self.out_filename = out_filename
         self.save_data = KoikatuSaveData(filename)
         self.card_dir = Path.cwd()
-
-        self.root = tk.Tk()
-        self.root.title('Koikatu Save data editor: ' + filename)
 
         style = ttk.Style()
         style.configure('.', padding='2 4 2 4')
@@ -286,14 +285,29 @@ if __name__ == '__main__':
                         default='resources_ja.json',
                         help='resource file name')
 
-    args = parser.parse_args()
+    root = tk.Tk()
+    root.title('Koikatu Save data editor')
 
-    if args.output is not None:
-        out_filename = args.output
+    if len(sys.argv) > 1:
+        args = parser.parse_args()
+        save_data = args.save_data
+
+        if args.output is not None:
+            out_filename = args.output
+        else:
+            out_filename = args.output
+        resources = args.resources
     else:
-        out_filename = args.save_data
+        save_data = askopenfilename(filetype=[("koikatu save data", "*.dat")],
+                                    initialdir=Path.cwd())
+        if save_data is None:
+            sys.exit(-1)
 
-    with codecs.open(args.resources, 'r', 'utf-8') as jsonfile:
+        out_filename = save_data
+        resources = 'resources_ja.json'
+
+
+    with codecs.open(resources, 'r', 'utf-8') as jsonfile:
         RES = json.load(jsonfile)
 
-    App(args.save_data, out_filename).run()
+    App(root, save_data, out_filename).run()
