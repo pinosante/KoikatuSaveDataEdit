@@ -6,6 +6,7 @@ import io
 import codecs
 import shutil
 import sys
+import traceback
 from pathlib import Path
 
 import tkinter as tk
@@ -18,36 +19,47 @@ from scframe import VerticalScrolledFrame
 from character import KoikatuCharacter
 from save_data import KoikatuSaveData
 
-RES = {}
-def res(key):
-    return RES[key] if key in RES else key
+class Resource:
+    resource = {}
+
+    @staticmethod
+    def load(filename):
+        with codecs.open(filename, 'r', 'utf-8') as jsonfile:
+             Resource.resource = json.load(jsonfile)
+
+    @staticmethod
+    def res(key):
+        return Resource.resource[key] if key in Resource.resource else key
+
+RM = Resource
 
 
 class PropertyPanel(ttk.Frame):
+
     def __init__(self, parent, character, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.character = character
 
-        label1 = ttk.Label(self, text=res('lastname'))
+        label1 = ttk.Label(self, text=RM.res('lastname'))
         self._lastname = tk.StringVar(value=character.lastname)
         entry1 = ttk.Entry(self, textvariable=self._lastname)
         label1.grid(row=0, column=0, sticky='E', columnspan=1)
         entry1.grid(row=0, column=1, sticky='W', columnspan=1)
 
-        label2 = ttk.Label(self, text=res('firstname'))
+        label2 = ttk.Label(self, text=RM.res('firstname'))
         self._firstname = tk.StringVar(value=character.firstname)
         entry2 = ttk.Entry(self, textvariable=self._firstname)
         label2.grid(row=0, column=2, sticky='E', columnspan=1)
         entry2.grid(row=0, column=3, sticky='W', columnspan=1)
 
-        label3 = ttk.Label(self, text=res('nickname'))
+        label3 = ttk.Label(self, text=RM.res('nickname'))
         self._nickname = tk.StringVar(value=character.nickname)
         entry3 = ttk.Entry(self, textvariable=self._nickname)
         label3.grid(row=1, column=0, sticky='E', columnspan=1)
         entry3.grid(row=1, column=1, sticky='W', columnspan=1)
 
-        values = (res('male'), res('female'))
-        label4 = ttk.Label(self, text=res('sex'))
+        values = (RM.res('male'), RM.res('female'))
+        label4 = ttk.Label(self, text=RM.res('sex'))
         self._sex = tk.StringVar(value=values[character.sex])
         entry4 = ttk.Combobox(self, values=values,
                               textvariable=self._sex, state='readonly')
@@ -56,28 +68,28 @@ class PropertyPanel(ttk.Frame):
 
         # answer
         self._answers = {}
-        frame = ttk.LabelFrame(self, text=res('answer'))
+        frame = ttk.LabelFrame(self, text=RM.res('answer'))
         for i, name in enumerate(character.answers.keys()):
             self._answers[name] = self._make_boolean_prop(frame,
-                                                          res(name),
+                                                          RM.res(name),
                                                           character.answers[name], i, 5)
         frame.grid(row=2, column=0, columnspan=4, sticky='W')
 
         # denail
         self._denials = {}
-        frame = ttk.LabelFrame(self, text=res('denial'))
+        frame = ttk.LabelFrame(self, text=RM.res('denial'))
         for i, name in enumerate(character.denials.keys()):
             self._denials[name] = self._make_boolean_prop(frame,
-                                                          res(name),
+                                                          RM.res(name),
                                                           character.denials[name], i, 5)
         frame.grid(row=3, column=0, columnspan=4, sticky='W')
 
         # attribute
         self._attributes = {}
-        frame = ttk.LabelFrame(self, text=res('attribute'))
+        frame = ttk.LabelFrame(self, text=RM.res('attribute'))
         for i, name in enumerate(character.attributes.keys()):
             self._attributes[name] = self._make_boolean_prop(frame,
-                                                             res(name),
+                                                             RM.res(name),
                                                              character.attributes[name], i, 5)
         frame.grid(row=4, column=0, columnspan=4, sticky='W')
 
@@ -274,7 +286,9 @@ class App:
 
 
 
-if __name__ == '__main__':
+def main():
+    default_resource = Path(sys.argv[0]).parent / 'resources_ja.json'
+
     parser = argparse.ArgumentParser()
     parser.add_argument('save_data',
                         help='koikatu save data')
@@ -282,7 +296,7 @@ if __name__ == '__main__':
                         help='output file')
     parser.add_argument('-r',
                         dest='resources',
-                        default='resources_ja.json',
+                        default=default_resource,
                         help='resource file name')
 
     root = tk.Tk()
@@ -304,10 +318,17 @@ if __name__ == '__main__':
             sys.exit(-1)
 
         out_filename = save_data
-        resources = 'resources_ja.json'
+        resources = default_resource
 
-
-    with codecs.open(resources, 'r', 'utf-8') as jsonfile:
-        RES = json.load(jsonfile)
+    Resource.load(resources)
 
     App(root, save_data, out_filename).run()
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as e:
+        traceback.print_exc()
+        print('push Enter key')
+        input()
