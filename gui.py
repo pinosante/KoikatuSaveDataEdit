@@ -45,7 +45,7 @@ class PropertyPanel(ttk.Frame):
         label3.grid(row=1, column=0, sticky='E', columnspan=1)
         entry3.grid(row=1, column=1, sticky='W', columnspan=1)
 
-        values = (res('male'), res('Female'))
+        values = (res('male'), res('female'))
         label4 = ttk.Label(self, text=res('sex'))
         self._sex = tk.StringVar(value=values[character.sex])
         entry4 = ttk.Combobox(self, values=values,
@@ -95,7 +95,7 @@ class PropertyPanel(ttk.Frame):
 
     @property
     def sex(self):
-        return [res('male'), res('female')].findself.sex.get()
+        return [res('male'), res('female')].find(self.sex.get())
 
     @property
     def answers(self):
