@@ -2,6 +2,7 @@
 
 GUI for editing koikatu save file
 
+
 ## usage
 
 Run gui.py (or gui.exe) with save file. Python 3.6 required.
@@ -9,6 +10,14 @@ Run gui.py (or gui.exe) with save file. Python 3.6 required.
 ```
 > python gui.py file01.dat
 ```
+
+## install (for execute gui.py)
+
+Copy *.py and resource_ja.json.
+And you have to install dependency packages.
+
+* PIL (pillow)
+* masgpack
 
 
 ## thanks
