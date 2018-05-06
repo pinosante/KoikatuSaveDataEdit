@@ -59,5 +59,13 @@
     "emotion" : "感情",
     "exmotions" : ["普通", "怒り"],
     "date" : "デートの約束",
-    "dates" : ["なし", "あり"]
+    "dates" : ["なし", "あり"],
+    "ac" : ["0%", "100%"],
+    "mune" : "胸",
+    "kokan" : "股間",
+    "siri" : "尻",
+    "tikubi" : "乳首",
+    "kokan_piston" : "股間ピストン",
+    "anal_piston" : "アナルピストン",
+    "houshi" : "奉仕"
 }

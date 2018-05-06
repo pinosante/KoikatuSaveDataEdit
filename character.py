@@ -6,7 +6,7 @@ import pprint
 import msgpack
 
 class KoikatuCharacter:
-    def __init__(self, data, with_card=True):
+    def __init__(self, data, with_card=True, skip_additional=False):
         self.with_card = with_card
         if with_card:
             # read first PNG
@@ -49,8 +49,11 @@ class KoikatuCharacter:
             else:
                 raise ValueError(f'Unsupported info {info["name"]}')
 
+        #print('name:', self.firstname, self.lastname)
+
         self.additional_keys = []
         self.additional = {}
+        self.ac = {}
         if not with_card:
             # additional info
             self.unknown02 = data.read(4)
@@ -65,18 +68,42 @@ class KoikatuCharacter:
             self.koikatu = self._read_byte(data)
             self.lover = self._read_byte(data)
             self.anger = self._read_byte(data)
-            
+
+            #print('h_count:', self.h_count)
+            #print('kokkatu:', self.koikatu)
+
             self.unknown03 = data.read(1)
             self.unknown04 = data.read(4)
 
             self.date = self._read_byte(data)
             self.unknown05 = data.read(3)
 
+            if not skip_additional:
+                self.unknown06 = data.read(18)
+
+                self.ac['mune'] = data.read(4)
+                self.ac['kokan'] = data.read(4)
+                self.ac['anal'] = data.read(4)
+                self.ac['siri'] = data.read(4)
+                self.ac['tikubi'] = data.read(4)
+
+                self.unknown07 = data.read(14)
+
+                self.ac['kokan_piston'] = data.read(4)
+                self.ac['anal_piston'] = data.read(4)
+            else:
+                self.unknown06 = b''
+                self.ac['mune'] = b''
+                self.ac['kokan'] = b''
+                self.ac['anal'] = b''
+                self.ac['siri'] = b''
+                self.ac['tikubi'] = b''
+                self.unknown07 = b''
+                self.ac['kokan_piston'] = b''
+                self.ac['anal_piston'] = b''
+
             self._read_additional(data)
 
-            self.raw_data = self._raw_data()
-            self.size = len(self.raw_data)
-            #print('chara data len: ', self.size)
 
     @property
     def firstname(self):
@@ -160,44 +187,16 @@ class KoikatuCharacter:
         self.body = value[1]
         self.hair = value[2]
 
+    def get_ac(self, key):
+        return 1 if self.ac[key] == b'\x00\x00\xc8\x42' else 0
+
+    def set_ac(self, key, value):
+        if len(self.ac[key]) > 0:
+            self.ac[key] = b'\x00\x00\xc8\x42' if value else b'\x00\x00\x00\x00'
+
 
     def save(self, out):
         out.write(self._serialize())
-
-
-    def _raw_data(self):
-        data = []
-        if self.with_card:
-            data = [self.card_png]
-
-        data += [
-            self._pack_int(self.product_no),
-            self._pack_utf8_string(self.marker),
-            self._pack_utf8_string(self.unknown01),
-            self._pack_int(self.png_length),
-            self.png,
-            self._pack_int(self.list_info_size),
-            self.list_info_data,
-            struct.pack('q', self.chara_datasize),
-            self.chara_data,
-            self.unknown02,
-            self.unknown_mark,
-            self._pack_utf8_string(self.dearname),
-            self._pack_int(self.feeling),
-            self._pack_int(self.m_love),
-            self._pack_int(self.h_count),
-            self._pack_byte(self.koikatu),
-            self._pack_byte(self.lover),
-            self._pack_byte(self.anger),
-            self.unknown03,
-            self.unknown04,
-            self._pack_byte(self.date),
-            self.unknown05,
-            self._pack_additional()
-        ]
-
-        return b''.join(data)
-
 
     def _serialize(self):
         custom_s = self._pack_custom()
@@ -258,6 +257,15 @@ class KoikatuCharacter:
             self.unknown04,
             self._pack_byte(self.date),
             self.unknown05,
+            self.unknown06,
+            self.ac['mune'],
+            self.ac['kokan'],
+            self.ac['anal'],
+            self.ac['siri'],
+            self.ac['tikubi'],
+            self.unknown07,
+            self.ac['kokan_piston'],
+            self.ac['anal_piston'],
             self._pack_additional()
         ]
 
@@ -350,6 +358,7 @@ class KoikatuCharacter:
         start = chunk.find(b'Idle')
         if start == -1:
             self.before_additional = chunk
+            self.ac['houshi'] = b''
             self.after_additional = b''
             return
 
@@ -373,6 +382,7 @@ class KoikatuCharacter:
             self.additional_keys.append(key)
             self.additional[key] = value
 
+        self.ac['houshi'] = stream.read(4)
         self.after_additional = stream.read()
 
 
@@ -384,6 +394,7 @@ class KoikatuCharacter:
             data.append(key.encode())
             data.append(self._pack_int(self.additional[key]))
 
+        data.append(self.ac['houshi'])
         data.append(self.after_additional)
         return b''.join(data)
 

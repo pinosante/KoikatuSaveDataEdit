@@ -28,10 +28,12 @@ class KoikatuSaveData:
         chara_data = chara_part.split(CHARA_HEADER)
 
         self.characters = []
+        count = 0
         for data in chara_data:
             if data:
-                chara = KoikatuCharacter(io.BytesIO(CHARA_HEADER + data), False)
+                chara = KoikatuCharacter(io.BytesIO(CHARA_HEADER + data), False, count == 0)
                 self.characters.append(chara)
+                count += 1
                 #print(f'chara: {chara.lastname} {chara.firstname} ({chara.nickname})')
 
 
@@ -103,5 +105,6 @@ if __name__ == '__main__':
     data = chara.before_additional
     chara.before_additional = b''.join([b'\x64', data[1:]])
 
+    #print('ac_mune:', chara.ac['mune'])
 
     save_data.save(args.save_data + '_02.dat')

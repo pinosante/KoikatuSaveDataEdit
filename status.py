@@ -38,13 +38,13 @@ class StatusPanel(ttk.Frame):
         
         row = 2
         values = RM.res('koikatu')
+        koikatu = values[chara.koikatu] if chara.sex == 1 else RM.res('koikatu')[1]
         label = ttk.Label(self, text=RM.res('club'))
-        self._koikatu = tk.StringVar(value=values[chara.koikatu])
+        self._koikatu = tk.StringVar(value=koikatu)
         combobox = ttk.Combobox(self, values=values,
                                 textvariable=self._koikatu, state='readonly')
         label.grid(row=row, column=0, sticky='E')
         combobox.grid(row=row, column=1, sticky='W')
-
 
         values = RM.res('dates')
         label = ttk.Label(self, text=RM.res('date'))
@@ -53,6 +53,53 @@ class StatusPanel(ttk.Frame):
                                 textvariable=self._date, state='readonly')
         label.grid(row=row, column=2, sticky='E')
         combobox.grid(row=row, column=3, sticky='W')
+
+        self._ac = {}
+        row = 3
+        label, cb = self._make_ac(chara, 'mune')
+        label.grid(row=row, column=0, sticky='E')
+        cb.grid(row=row, column=1, sticky='W')
+
+        label, cb = self._make_ac(chara, 'kokan')
+        label.grid(row=row, column=2, sticky='E')
+        cb.grid(row=row, column=3, sticky='W')
+
+        row = 4
+        label, cb = self._make_ac(chara, 'anal')
+        label.grid(row=row, column=0, sticky='E')
+        cb.grid(row=row, column=1, sticky='W')
+
+        label, cb = self._make_ac(chara, 'siri')
+        label.grid(row=row, column=2, sticky='E')
+        cb.grid(row=row, column=3, sticky='W')
+
+        row = 5
+        label, cb = self._make_ac(chara, 'tikubi')
+        label.grid(row=row, column=0, sticky='E')
+        cb.grid(row=row, column=1, sticky='W')
+
+        label, cb = self._make_ac(chara, 'kokan_piston')
+        label.grid(row=row, column=2, sticky='E')
+        cb.grid(row=row, column=3, sticky='W')
+
+        row = 6
+        label, cb = self._make_ac(chara, 'anal_piston')
+        label.grid(row=row, column=0, sticky='E')
+        cb.grid(row=row, column=1, sticky='W')
+
+        label, cb = self._make_ac(chara, 'houshi')
+        label.grid(row=row, column=2, sticky='E')
+        cb.grid(row=row, column=3, sticky='W')
+
+
+    def _make_ac(self, chara, name):
+        values = RM.res('ac')
+        label = ttk.Label(self, text=RM.res(name))
+        self._ac[name] = tk.StringVar(value=values[chara.get_ac(name)])
+        combobox = ttk.Combobox(self, values=values,
+                                textvariable=self._ac[name], state='readonly')
+        return (label, combobox)
+
 
     @property
     def feeling(self):
@@ -80,3 +127,7 @@ class StatusPanel(ttk.Frame):
     def date(self):
         values = RM.res('dates')
         return values.index(self._date.get())
+
+    def ac(self, name):
+        values = RM.res('ac')
+        return values.index(self._ac[name].get()) == 1

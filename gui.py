@@ -133,9 +133,7 @@ class PropertyPanel(ttk.Frame):
 
     @weak_point.setter
     def weak_point(self, value):
-        values = RM.res('week_points')
-        print('vs:', values)
-        print('v:', value)
+        values = RM.res('weak_points')
         self._weak_point.set(values[value])
 
     @property
@@ -233,6 +231,13 @@ class CharacterPanel(ttk.Frame):
         chara.lover = panel.relation
         chara.date = panel.date
 
+        ac = [
+            'mune', 'kokan', 'anal', 'siri', 'tikubi',
+            'kokan_piston', 'anal_piston', 'houshi'
+        ]
+        for name in ac:
+            chara.set_ac(name, panel.ac(name))
+
         self.dirty = True
         return chara
 
@@ -273,7 +278,7 @@ class App:
         style = ttk.Style()
         style.configure('.', padding='2 4 2 4')
 
-        width = 1075
+        width = 1100
         height = 320 * 3 + 12
         self.root.geometry(f'{width}x{height}')
 
@@ -302,7 +307,7 @@ class App:
     def save(self):
         for i, panel in enumerate(self.panels):
             chara = panel.character
-            if panel.dirty:
+            if i > 0 and panel.dirty:
                 self.save_data.replace(i, chara)
 
         if self.filename == self.out_filename:
