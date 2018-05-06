@@ -4,10 +4,10 @@ GUI for editing koikatu save file
 
 ## usage
 
-Run gui.py (or gui.exe) with save file
+Run gui.py (or gui.exe) with save file. Python 3.6 required.
 
 ```
-> gui.exe file01.dat
+> python gui.py file01.dat
 ```
 
 
