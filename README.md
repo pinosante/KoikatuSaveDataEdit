@@ -16,13 +16,15 @@ Run gui.py (or gui.exe) with save file. Python 3.6 required.
 Copy *.py and resource_ja.json.
 And you have to install dependency packages.
 
-* PIL (pillow)
-* masgpack
+```
+$ pip3 install pillow
+$ pip3 install msgpack
+```
 
 
 ## thanks
 
-This program is using some codes from the following repositories.
+This program is using some codes from following repositories.
 
 * https://github.com/106-/KoikatuCharaLoader
 * https://gist.github.com/EugeneBakin/76c8f9bcec5b390e45df
