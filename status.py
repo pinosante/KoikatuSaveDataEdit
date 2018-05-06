@@ -16,8 +16,9 @@ class StatusPanel(ttk.Frame):
         entry.grid(row=row, column=1, sticky='W')
 
         values = RM.res('relations')
+        lover = self._get_value(values, chara.lover)
         label = ttk.Label(self, text=RM.res('relation'))
-        self._relation = tk.StringVar(value=values[chara.lover])
+        self._relation = tk.StringVar(value=lover)
         combobox = ttk.Combobox(self, values=values,
                                 textvariable=self._relation, state='readonly')
         label.grid(row=row, column=2, sticky='E')
@@ -38,7 +39,7 @@ class StatusPanel(ttk.Frame):
         
         row = 2
         values = RM.res('koikatu')
-        koikatu = values[chara.koikatu] if chara.sex == 1 else RM.res('koikatu')[1]
+        koikatu = self._get_value(values, chara.koikatu)
         label = ttk.Label(self, text=RM.res('club'))
         self._koikatu = tk.StringVar(value=koikatu)
         combobox = ttk.Combobox(self, values=values,
@@ -47,8 +48,9 @@ class StatusPanel(ttk.Frame):
         combobox.grid(row=row, column=1, sticky='W')
 
         values = RM.res('dates')
+        date = self._get_value(values, chara.date)
         label = ttk.Label(self, text=RM.res('date'))
-        self._date = tk.StringVar(value=values[chara.date])
+        self._date = tk.StringVar(value=date)
         combobox = ttk.Combobox(self, values=values,
                                 textvariable=self._date, state='readonly')
         label.grid(row=row, column=2, sticky='E')
@@ -95,10 +97,15 @@ class StatusPanel(ttk.Frame):
     def _make_ac(self, chara, name):
         values = RM.res('ac')
         label = ttk.Label(self, text=RM.res(name))
-        self._ac[name] = tk.StringVar(value=values[chara.get_ac(name)])
+        i = chara.get_ac(name)
+        value = self._get_value(values, i)
+        self._ac[name] = tk.StringVar(value=value)
         combobox = ttk.Combobox(self, values=values,
                                 textvariable=self._ac[name], state='readonly')
         return (label, combobox)
+
+    def _get_value(self, values, index):
+        return values[index] if len(values) > index else values[0]
 
 
     @property

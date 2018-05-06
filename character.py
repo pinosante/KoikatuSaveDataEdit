@@ -54,8 +54,27 @@ class KoikatuCharacter:
         self.additional_keys = []
         self.additional = {}
         self.ac = {}
+        self.ex_data = b''
         if not with_card:
             # additional info
+            len1 = self._read_byte(data)
+            if len1 == 4:
+                marker = data.read(len1)
+                if marker == b'KKEx':
+                    # bepinex extensible format
+                    version = self._read_int(data)
+                    len2 = self._read_int(data)
+                    ex_data = data.read(len2)
+                    self.ex_data = b''.join([
+                        self._pack_byte(len1),
+                        marker,
+                        self._pack_int(version),
+                        self._pack_int(len2),
+                        ex_data
+                    ])
+            else:
+                data.seek(-1, 1)
+
             self.unknown02 = data.read(4)
             self.unknown_mark = data.read(4)
 
@@ -69,14 +88,26 @@ class KoikatuCharacter:
             self.lover = self._read_byte(data)
             self.anger = self._read_byte(data)
 
+            #print('feeling', self.feeling)
+            #print('m_love', self.m_love)
+            #print('h_count', self.h_count)
+            #print('lover:', self.lover)
+
             #print('h_count:', self.h_count)
-            #print('kokkatu:', self.koikatu)
+            #print('koikatu:', self.koikatu)
+            #print('sex:', self.sex)
+            #if self.koikatu > 1:
+            #    self.koikatu = 0
 
             self.unknown03 = data.read(1)
             self.unknown04 = data.read(4)
 
             self.date = self._read_byte(data)
             self.unknown05 = data.read(3)
+
+            #print('date:', self.date)
+            #if self.date > 1:
+            #    self.date = 0
 
             if not skip_additional:
                 self.unknown06 = data.read(18)
@@ -244,6 +275,7 @@ class KoikatuCharacter:
             list_info_s,
             struct.pack('q', len(chara_values)),
             chara_values,
+            self.ex_data,
             self.unknown02,
             self.unknown_mark,
             self._pack_utf8_string(self.dearname),
