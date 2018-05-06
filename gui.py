@@ -40,59 +40,80 @@ class PropertyPanel(ttk.Frame):
         super().__init__(parent, *args, **kwargs)
         self.character = character
 
+        row = 0
         label1 = ttk.Label(self, text=RM.res('lastname'))
         self._lastname = tk.StringVar(value=character.lastname)
         entry1 = ttk.Entry(self, textvariable=self._lastname)
-        label1.grid(row=0, column=0, sticky='E', columnspan=1)
-        entry1.grid(row=0, column=1, sticky='W', columnspan=1)
+        label1.grid(row=row, column=0, sticky='E', columnspan=1)
+        entry1.grid(row=row, column=1, sticky='W', columnspan=1)
 
         label2 = ttk.Label(self, text=RM.res('firstname'))
         self._firstname = tk.StringVar(value=character.firstname)
         entry2 = ttk.Entry(self, textvariable=self._firstname)
-        label2.grid(row=0, column=2, sticky='E', columnspan=1)
-        entry2.grid(row=0, column=3, sticky='W', columnspan=1)
+        label2.grid(row=row, column=2, sticky='E', columnspan=1)
+        entry2.grid(row=row, column=3, sticky='W', columnspan=1)
 
+        row = row + 1
         label3 = ttk.Label(self, text=RM.res('nickname'))
         self._nickname = tk.StringVar(value=character.nickname)
         entry3 = ttk.Entry(self, textvariable=self._nickname)
-        label3.grid(row=1, column=0, sticky='E', columnspan=1)
-        entry3.grid(row=1, column=1, sticky='W', columnspan=1)
+        label3.grid(row=row, column=0, sticky='E', columnspan=1)
+        entry3.grid(row=row, column=1, sticky='W', columnspan=1)
 
         values = (RM.res('male'), RM.res('female'))
         label4 = ttk.Label(self, text=RM.res('sex'))
         self._sex = tk.StringVar(value=values[character.sex])
         entry4 = ttk.Combobox(self, values=values,
                               textvariable=self._sex, state='readonly')
-        label4.grid(row=1, column=2, sticky="E", columnspan=1)
-        entry4.grid(row=1, column=3, sticky="W", columnspan=1)
+        label4.grid(row=row, column=2, sticky="E", columnspan=1)
+        entry4.grid(row=row, column=3, sticky="W", columnspan=1)
+
+        row = row + 1
+        values = RM.res('personalities')
+        label5 = ttk.Label(self, text=RM.res('personality'))
+        self._personality = tk.StringVar(value=values[character.personality])
+        entry5 = ttk.Combobox(self, values=values,
+                              textvariable=self._personality, state='readonly')
+        label5.grid(row=row, column=0, sticky="E", columnspan=1)
+        entry5.grid(row=row, column=1, sticky="W", columnspan=1)
+
+        values = RM.res('weak_points')
+        label6 = ttk.Label(self, text=RM.res('weak_point'))
+        self._weak_point = tk.StringVar(value=values[character.weak_point])
+        entry6 = ttk.Combobox(self, values=values,
+                              textvariable=self._weak_point, state='readonly')
+        label6.grid(row=row, column=2, sticky="E", columnspan=1)
+        entry6.grid(row=row, column=3, sticky="W", columnspan=1)
 
         # answer
+        row = row + 1
         self._answers = {}
         frame = ttk.LabelFrame(self, text=RM.res('answer'))
         for i, name in enumerate(character.answers.keys()):
             self._answers[name] = self._make_boolean_prop(frame,
                                                           RM.res(name),
                                                           character.answers[name], i, 5)
-        frame.grid(row=2, column=0, columnspan=4, sticky='W')
+        frame.grid(row=row, column=0, columnspan=4, sticky='W')
 
         # denail
+        row = row + 1
         self._denials = {}
         frame = ttk.LabelFrame(self, text=RM.res('denial'))
         for i, name in enumerate(character.denials.keys()):
             self._denials[name] = self._make_boolean_prop(frame,
                                                           RM.res(name),
                                                           character.denials[name], i, 5)
-        frame.grid(row=3, column=0, columnspan=4, sticky='W')
+        frame.grid(row=row, column=0, columnspan=4, sticky='W')
 
         # attribute
+        row = row + 1
         self._attributes = {}
         frame = ttk.LabelFrame(self, text=RM.res('attribute'))
         for i, name in enumerate(character.attributes.keys()):
             self._attributes[name] = self._make_boolean_prop(frame,
                                                              RM.res(name),
                                                              character.attributes[name], i, 5)
-        frame.grid(row=4, column=0, columnspan=4, sticky='W')
-
+        frame.grid(row=row, column=0, columnspan=4, sticky='W')
 
     @property
     def firstname(self):
@@ -108,7 +129,29 @@ class PropertyPanel(ttk.Frame):
 
     @property
     def sex(self):
-        return [res('male'), res('female')].find(self.sex.get())
+        return [RM.res('male'), RM.res('female')].index(self._sex.get())
+
+    @property
+    def personality(self):
+        values = RM.res('personalities')
+        return values.index(self._personality.get())
+
+    @personality.setter
+    def personality(self, value):
+        values = RM.res('personalities')
+        return self._personality.set(values[value])
+
+    @property
+    def weak_point(self):
+        values = RM.res('weak_points')
+        return values.index(self._weak_point.get())
+
+    @weak_point.setter
+    def weak_point(self, value):
+        values = RM.res('week_points')
+        print('vs:', values)
+        print('v:', value)
+        self._weak_point.set(values[value])
 
     @property
     def answers(self):
@@ -126,6 +169,9 @@ class PropertyPanel(ttk.Frame):
         self._firstname.set(character.firstname)
         self._lastname.set(character.lastname)
         self._nickname.set(character.nickname)
+
+        self.personality = character.personality
+        self.weak_point = character.weak_point
 
         for key in self._answers:
             self._answers[key].set(character.answers[key])
@@ -188,6 +234,12 @@ class CharacterPanel(ttk.Frame):
             self.dirty = True
         if chara.nickname != panel.nickname:
             chara.nickname = panel.nickname
+            self.dirty = True
+        if chara.personality != panel.personality:
+            chara.personality = panel.personality
+            self.dirty = True
+        if chara.weak_point != panel.weak_point:
+            chara.weak_point = panel.weak_point
             self.dirty = True
         if chara.answers != self.property_panel.answers:
             chara.answers = self.property_panel.answers
@@ -268,13 +320,13 @@ class App:
             chara = panel.character
             if panel.dirty:
                 self.save_data.replace(i, chara)
-        
+
         if self.filename == self.out_filename:
             # create backup
             path = Path(self.filename).resolve()
             backup = path.parent / (path.stem + '.old.dat')
             shutil.copy(self.filename, backup)
-        
+
         self.save_data.save(self.out_filename)
 
 
@@ -314,7 +366,7 @@ def main():
         if args.output is not None:
             out_filename = args.output
         else:
-            out_filename = args.output
+            out_filename = save_data
         resources = args.resources
     else:
         save_data = askopenfilename(filetype=[("koikatu save data", "*.dat")],
@@ -328,6 +380,7 @@ def main():
         resources = default_resource
 
     Resource.load(resources)
+    print('out:', out_filename)
     App(root, save_data, out_filename).run()
 
 

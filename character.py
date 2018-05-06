@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+import argparse
 import struct
 import io
+import pprint
 import msgpack
 
 class KoikatuCharacter:
@@ -116,6 +118,22 @@ class KoikatuCharacter:
     @attributes.setter
     def attributes(self, value):
         self.parameter['attribute'] = value
+
+    @property
+    def personality(self):
+        return self.parameter['personality']
+
+    @personality.setter
+    def personality(self, value):
+        self.parameter['personality'] = value
+
+    @property
+    def weak_point(self):
+        return self.parameter['weakPoint']
+
+    @weak_point.setter
+    def weak_point(self, value):
+        self.parameter['weakPoint'] = value
 
     @property
     def custom(self):
@@ -354,3 +372,16 @@ class KoikatuCharacter:
         data += [self._pack_int(iend_len, '!'), iend, iend_crc]
 
         return b"".join(data)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('png_file')
+
+    args = parser.parse_args()
+
+    with open(args.png_file, 'rb') as infile:
+        chara = KoikatuCharacter(infile, True)
+
+        pprint.pprint(chara.parameter)
+        #pprint.pprint(chara.status)
