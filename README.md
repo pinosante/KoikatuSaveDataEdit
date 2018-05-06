@@ -11,9 +11,9 @@ Run gui.py (or gui.exe) with save file. Python 3.6 required.
 ```
 
 
-## Thanks
+## thanks
 
-This program is using some codes from the following repository
+This program is using some codes from the following repositories.
 
 * https://github.com/106-/KoikatuCharaLoader
 * https://gist.github.com/EugeneBakin/76c8f9bcec5b390e45df
