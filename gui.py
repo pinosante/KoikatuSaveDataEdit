@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse
-import json
 import io
-import codecs
 import shutil
 import sys
 import traceback
@@ -14,25 +12,12 @@ import tkinter.ttk as ttk
 from tkinter.filedialog import askopenfilename
 
 from PIL import Image, ImageTk
-
 from scframe import VerticalScrolledFrame
+
 from character import KoikatuCharacter
 from save_data import KoikatuSaveData
-
-class Resource:
-    resource = {}
-
-    @staticmethod
-    def load(filename):
-        with codecs.open(filename, 'r', 'utf-8') as jsonfile:
-             Resource.resource = json.load(jsonfile)
-
-    @staticmethod
-    def res(key):
-        return Resource.resource[key] if key in Resource.resource else key
-
-RM = Resource
-
+from resource import Resource as RM
+from status import StatusPanel
 
 class PropertyPanel(ttk.Frame):
 
@@ -214,42 +199,41 @@ class CharacterPanel(ttk.Frame):
         self.photo.grid(row=0, column=0, rowspan=3, padx=2, pady=2)
 
         self.property_panel = PropertyPanel(self, character)
-        self.property_panel.grid(row=0, column=1, rowspan=2, padx=2, pady=2)
+        self.property_panel.grid(row=0, column=1, rowspan=1, padx=2, pady=2)
+
+        self.status_panel = StatusPanel(self, character)
+        self.status_panel.grid(row=0, column=2, rowspan=1, padx=4, pady=2, sticky='N')
 
         self._load_btn = ttk.Button(self,
                                     text='Load Character Card',
                                     command=self._open_dialog)
-        self._load_btn.grid(row=2, column=1, sticky='W')
+        self._load_btn.grid(row=2, column=1, sticky='W', pady=4)
 
 
     @property
     def character(self):
         chara = self._character
         panel = self.property_panel
-        if chara.firstname != panel.firstname:
-            chara.firstname = panel.firstname
-            self.dirty = True
-        if chara.lastname != panel.lastname:
-            chara.lastname = panel.lastname
-            self.dirty = True
-        if chara.nickname != panel.nickname:
-            chara.nickname = panel.nickname
-            self.dirty = True
-        if chara.personality != panel.personality:
-            chara.personality = panel.personality
-            self.dirty = True
-        if chara.weak_point != panel.weak_point:
-            chara.weak_point = panel.weak_point
-            self.dirty = True
-        if chara.answers != self.property_panel.answers:
-            chara.answers = self.property_panel.answers
-            self.dirty = True
-        if chara.denials != self.property_panel.denials:
-            chara.denials = self.property_panel.denials
-            self.dirty = True
-        if chara.attributes != self.property_panel.attributes:
-            chara.attributes = self.property_panel.attributes
-            self.dirty = True
+
+        chara.firstname = panel.firstname
+        chara.lastname = panel.lastname
+        chara.nickname = panel.nickname
+
+        chara.personality = panel.personality
+        chara.weak_point = panel.weak_point
+        chara.answers = self.property_panel.answers
+        chara.denials = self.property_panel.denials
+        chara.attributes = self.property_panel.attributes
+
+        panel = self.status_panel
+        chara.feeling = panel.feeling
+        chara.m_love  = panel.m_love
+        chara.h_count = panel.h_count
+        chara.koikatu = panel.koikatu
+        chara.lover = panel.relation
+        chara.date = panel.date
+
+        self.dirty = True
         return chara
 
     def _update_character(self, character):
@@ -289,7 +273,7 @@ class App:
         style = ttk.Style()
         style.configure('.', padding='2 4 2 4')
 
-        width = 680
+        width = 1075
         height = 320 * 3 + 12
         self.root.geometry(f'{width}x{height}')
 
@@ -379,7 +363,7 @@ def main():
         out_filename = save_data
         resources = default_resource
 
-    Resource.load(resources)
+    RM.load(resources)
     print('out:', out_filename)
     App(root, save_data, out_filename).run()
 

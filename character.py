@@ -49,6 +49,8 @@ class KoikatuCharacter:
             else:
                 raise ValueError(f'Unsupported info {info["name"]}')
 
+        self.additional_keys = []
+        self.additional = {}
         if not with_card:
             # additional info
             self.unknown02 = data.read(4)
@@ -57,7 +59,20 @@ class KoikatuCharacter:
             self.dearname = self._read_utf8_string(data)
             #print('dear:', self.dearname)
 
-            self.additional_data = data.read()
+            self.feeling = self._read_int(data)
+            self.m_love = self._read_int(data)
+            self.h_count = self._read_int(data)
+            self.koikatu = self._read_byte(data)
+            self.lover = self._read_byte(data)
+            self.anger = self._read_byte(data)
+            
+            self.unknown03 = data.read(1)
+            self.unknown04 = data.read(4)
+
+            self.date = self._read_byte(data)
+            self.unknown05 = data.read(3)
+
+            self._read_additional(data)
 
             self.raw_data = self._raw_data()
             self.size = len(self.raw_data)
@@ -144,7 +159,7 @@ class KoikatuCharacter:
         self.face = value[0]
         self.body = value[1]
         self.hair = value[2]
-    
+
 
     def save(self, out):
         out.write(self._serialize())
@@ -168,7 +183,17 @@ class KoikatuCharacter:
             self.unknown02,
             self.unknown_mark,
             self._pack_utf8_string(self.dearname),
-            self.additional_data
+            self._pack_int(self.feeling),
+            self._pack_int(self.m_love),
+            self._pack_int(self.h_count),
+            self._pack_byte(self.koikatu),
+            self._pack_byte(self.lover),
+            self._pack_byte(self.anger),
+            self.unknown03,
+            self.unknown04,
+            self._pack_byte(self.date),
+            self.unknown05,
+            self._pack_additional()
         ]
 
         return b''.join(data)
@@ -223,7 +248,17 @@ class KoikatuCharacter:
             self.unknown02,
             self.unknown_mark,
             self._pack_utf8_string(self.dearname),
-            self.additional_data
+            self._pack_int(self.feeling),
+            self._pack_int(self.m_love),
+            self._pack_int(self.h_count),
+            self._pack_byte(self.koikatu),
+            self._pack_byte(self.lover),
+            self._pack_byte(self.anger),
+            self.unknown03,
+            self.unknown04,
+            self._pack_byte(self.date),
+            self.unknown05,
+            self._pack_additional()
         ]
 
         return b''.join(data)
@@ -267,7 +302,7 @@ class KoikatuCharacter:
             coordinate["clothes"] = msgpack.unpackb(data_stream.read(length), encoding='ascii')
             length = self._read_int(data_stream)
             coordinate["accessory"] = msgpack.unpackb(data_stream.read(length), encoding='ascii')
-            makeup = self._read_byte_size(data_stream)
+            makeup = self._read_byte(data_stream)
             coordinate["enableMakeup"] = True if makeup != 0 else False
             length = self._read_int(data_stream)
             coordinate["makeup"] = msgpack.unpackb(data_stream.read(length), encoding='ascii')
@@ -309,23 +344,67 @@ class KoikatuCharacter:
         return msgpack.packb(self.status, use_single_float=True, use_bin_type=True)
 
 
+    def _read_additional(self, data):
+        chunk = data.read()
+
+        start = chunk.find(b'Idle')
+        if start == -1:
+            self.before_additional = chunk
+            self.after_additional = b''
+            return
+
+        # -1 is length byte of 'Idle'
+        self.before_additional = chunk[0:start-1]
+
+        stream = io.BytesIO(chunk[start + len('Idle'):])
+        value = self._read_int(stream)
+
+        self.additional_keys.append('Idle')
+        self.additional['Idle'] = value
+
+        while True:
+            len_ = self._read_byte(stream)
+            if len_ == 0:
+                stream.seek(-1, 1)
+                break
+            key = stream.read(len_).decode('ascii')
+            value = self._read_int(stream)
+
+            self.additional_keys.append(key)
+            self.additional[key] = value
+
+        self.after_additional = stream.read()
+
+
+    def _pack_additional(self):
+        data = [self.before_additional]
+
+        for key in self.additional_keys:
+            data.append(self._pack_byte(len(key)))
+            data.append(key.encode())
+            data.append(self._pack_int(self.additional[key]))
+
+        data.append(self.after_additional)
+        return b''.join(data)
+
+
     def _read_utf8_string(self, data):
-        len_ = self._read_byte_size(data)
+        len_ = self._read_byte(data)
         value = data.read(len_)
         return (value.decode('utf8'), len_)
 
 
     def _pack_utf8_string(self, string):
-        len_ = self._pack_byte_size(string[1])
+        len_ = self._pack_byte(string[1])
         binary = string[0].encode()
         return len_ + binary
 
 
-    def _read_byte_size(self, data):
+    def _read_byte(self, data):
         return struct.unpack('b', data.read(1))[0]
 
 
-    def _pack_byte_size(self, size):
+    def _pack_byte(self, size):
         return struct.pack('b', size)
 
 
@@ -385,3 +464,5 @@ if __name__ == '__main__':
 
         pprint.pprint(chara.parameter)
         #pprint.pprint(chara.status)
+        #pprint.pprint(chara.additional)
+

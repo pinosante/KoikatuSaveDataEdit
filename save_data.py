@@ -79,11 +79,29 @@ if __name__ == '__main__':
     for i, chara in enumerate(save_data.characters):
         with open(outdir / f'char_{i:03}.png', 'wb') as pngfile:
             pngfile.write(chara.png)
-        with open(outdir / f'char_{i:03}.char.dat', 'wb') as pngfile:
-            pngfile.write(chara.chara_data)
-        with open(outdir / f'char_{i:03}.additional.dat', 'wb') as pngfile:
-            pngfile.write(chara.additional_data)
+
+        with open(outdir / f'char_{i:03}.char.dat', 'wb') as outfile:
+            outfile.write(chara.chara_data)
+
+        with open(outdir / f'char_{i:03}.additional0.dat', 'wb') as outfile:
+            outfile.write(chara.before_additional)
+
+        with open(outdir / f'char_{i:03}.additional1.txt', 'w') as outfile:
+            for key in chara.additional_keys:
+                print(f'{key:16} : {chara.additional[key]:04x}', file=outfile)
+
+        with open(outdir / f'char_{i:03}.additional2.dat', 'wb') as outfile:
+            outfile.write(chara.after_additional)
 
 
     # confirm serializing
     save_data.save(args.save_data + '_01.dat')
+
+    # test
+    chara = save_data.characters[-1]
+
+    data = chara.before_additional
+    chara.before_additional = b''.join([b'\x64', data[1:]])
+
+
+    save_data.save(args.save_data + '_02.dat')

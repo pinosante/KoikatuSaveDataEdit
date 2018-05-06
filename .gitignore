@@ -2,6 +2,6 @@
 *.dat
 __pycache__/
 .vscode
-cards/
+cards*/
 build/
 dist/
