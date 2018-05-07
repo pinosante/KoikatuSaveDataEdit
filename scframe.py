@@ -52,11 +52,11 @@ class VerticalScrolledFrame(ttk.Frame):
         canvas.bind('<Configure>', _configure_canvas)
 
         # bind mouse wheel
-        def mouse_wheel_scroll(event):
-            self.canvas.yview_scroll(-1 * (1 if event.delta > 0 else -1), tk.UNITS)
-
-        vscrollbar.bind('<MouseWheel>', mouse_wheel_scroll)
+        vscrollbar.bind('<MouseWheel>', self.mouse_wheel_scroll)
         vscrollbar.bind('<Enter>', lambda e: canvas.focus_set())
+
+    def mouse_wheel_scroll(self, event):
+        self.canvas.yview_scroll(-1 * (1 if event.delta > 0 else -1), tk.UNITS)
 
 
 if __name__ == "__main__":
