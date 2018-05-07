@@ -278,28 +278,30 @@ class App:
         style = ttk.Style()
         style.configure('.', padding='2 4 2 4')
 
-        width = 1100
-        height = 320 * 3 + 12
-        self.root.geometry(f'{width}x{height}')
-
         frame = VerticalScrolledFrame(self.root)
         self.panels = []
         for chara in self.save_data.characters:
             panel = CharacterPanel(self, frame.interior, chara)
             panel.pack()
             self.panels.append(panel)
-        frame.grid(row=0, column=0)
 
         btn_frame = ttk.Frame(self.root)
         save_btn = ttk.Button(btn_frame, text='Save & Quit', command=self.save_and_quit)
         quit_btn = ttk.Button(btn_frame, text='Quit', command=self.quit)
         quit_btn.pack(side='right', pady=2)
         save_btn.pack(side='right', pady=2)
+
+        frame.grid(row=0, column=0)
         btn_frame.grid(row=1, column=0, pady=2, sticky='E')
 
+        y_padding = 4
+        width = 1100
+        height = 355 * 3 + btn_frame.winfo_height() + y_padding * 2
+        self.root.geometry(f'{width}x{height}')
+
         def _configure(event):
-            h = 320 * 3 - 20
-            frame.canvas.config(height=h)
+            fh = self.root.winfo_height() - btn_frame.winfo_height() - y_padding
+            frame.canvas.config(height=fh)
 
         self.root.bind('<Configure>', _configure)
 
