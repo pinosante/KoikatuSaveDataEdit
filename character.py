@@ -88,29 +88,22 @@ class KoikatuCharacter:
             self.lover = self._read_byte(data)
             self.anger = self._read_byte(data)
 
-            #print('feeling', self.feeling)
-            #print('m_love', self.m_love)
-            #print('h_count', self.h_count)
-            #print('lover:', self.lover)
-
-            #print('h_count:', self.h_count)
-            #print('koikatu:', self.koikatu)
-            #print('sex:', self.sex)
-            #if self.koikatu > 1:
-            #    self.koikatu = 0
-
             self.unknown03 = data.read(1)
-            self.unknown04 = data.read(4)
 
-            self.date = self._read_byte(data)
-            self.unknown05 = data.read(3)
+            self.intelligence = self._read_int(data)
 
-            #print('date:', self.date)
-            #if self.date > 1:
-            #    self.date = 0
+            if self.sex == 0:
+                self.strength = self._read_int(data)
+                self._date = 0
+            else:
+                self._date = self._read_byte(data)
+                data.read(3) # not use
+                self.strength = 0
+
+            self.ero = self._read_int(data)
 
             if not skip_additional:
-                self.unknown06 = data.read(18)
+                self.unknown06 = data.read(14)
 
                 self.ac['mune'] = data.read(4)
                 self.ac['kokan'] = data.read(4)
@@ -212,6 +205,15 @@ class KoikatuCharacter:
     def custom(self):
         return (self.face, self.body, self.hair)
 
+    @property
+    def date(self):
+        return self._date
+
+    @date.setter
+    def date(self, value):
+        self._date = value
+
+
     @custom.setter
     def custom(self, value):
         self.face = value[0]
@@ -265,6 +267,11 @@ class KoikatuCharacter:
         if self.with_card:
             data = [self.card_png]
 
+        if self.sex == 0:
+            bstr = self._pack_int(self.strength)
+        else:
+            bstr = self._pack_byte(self._date) + b'\x00\x00\x00'
+
         data += [
             self._pack_int(self.product_no),
             self._pack_utf8_string(self.marker),
@@ -286,9 +293,9 @@ class KoikatuCharacter:
             self._pack_byte(self.lover),
             self._pack_byte(self.anger),
             self.unknown03,
-            self.unknown04,
-            self._pack_byte(self.date),
-            self.unknown05,
+            self._pack_int(self.intelligence),
+            bstr,
+            self._pack_int(self.ero),
             self.unknown06,
             self.ac['mune'],
             self.ac['kokan'],
