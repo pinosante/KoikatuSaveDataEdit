@@ -137,4 +137,4 @@ class StatusPanel(ttk.Frame):
 
     def ac(self, name):
         values = RM.res('ac')
-        return values.index(self._ac[name].get()) == 1
+        return values.index(self._ac[name].get())

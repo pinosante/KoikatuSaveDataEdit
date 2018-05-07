@@ -102,6 +102,15 @@ if __name__ == '__main__':
     # test
     chara = save_data.characters[-1]
 
+    print('mune        :', chara.ac['mune'])
+    print('kokan       :', chara.ac['kokan'])
+    print('anal        :', chara.ac['anal'])
+    print('siri        :', chara.ac['siri'])
+    print('tikubi      :', chara.ac['tikubi'])
+    print('kokan_piston:', chara.ac['kokan_piston'])
+    print('anal_piston :', chara.ac['anal_piston'])
+    print('houshi      :', chara.ac['houshi'])
+
     data = chara.before_additional
     chara.before_additional = b''.join([b'\x64', data[1:]])
 

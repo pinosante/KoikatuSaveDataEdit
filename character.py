@@ -5,6 +5,21 @@ import io
 import pprint
 import msgpack
 
+AC_MAP = [
+    b'\x00\x30',
+    b'\x20\x41',
+    b'\xA0\x41',
+    b'\xF4\x41',
+    b'\x20\x42',
+    b'\x48\x42',
+    b'\x70\x42',
+    b'\x8C\x42',
+    b'\xA0\x42',
+    b'\xB4\x42',
+    b'\xC8\x42',
+]
+
+
 class KoikatuCharacter:
     def __init__(self, data, with_card=True, skip_additional=False):
         self.with_card = with_card
@@ -221,11 +236,21 @@ class KoikatuCharacter:
         self.hair = value[2]
 
     def get_ac(self, key):
-        return 1 if self.ac[key] == b'\x00\x00\xc8\x42' else 0
+        if len(self.ac[key]) > 0:
+            v = self._unpack_short(self.ac[key][2:])
+            for i, lv in enumerate([self._unpack_short(h) for h in AC_MAP]):
+                if v < lv:
+                    return i - 1 if i > 0 else 0
+            return 10
+        else:
+            return 0
 
     def set_ac(self, key, value):
         if len(self.ac[key]) > 0:
-            self.ac[key] = b'\x00\x00\xc8\x42' if value else b'\x00\x00\x00\x00'
+            self.ac[key] = self.ac[key][0:2] + AC_MAP[value]
+
+    def _unpack_short(self, bytes_):
+        return struct.unpack('H', bytes_)
 
 
     def save(self, out):
