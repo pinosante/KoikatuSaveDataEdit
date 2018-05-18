@@ -48,8 +48,9 @@ class KoikatuCharacter:
         # character info
         self.chara_datasize = struct.unpack("q", data.read(8))[0]
         self.chara_data = data.read(self.chara_datasize)
-        self.character_info = {}
+        self.info_order = []
         for info in self.list_info['lstInfo']:
+            self.info_order.append(info['name'])
             start = info['pos']
             end = info['pos'] + info['size']
             part = self.chara_data[start:end]
@@ -61,6 +62,8 @@ class KoikatuCharacter:
                 self._read_parameter(part)
             elif info['name'] == 'Status':
                 self._read_status(part)
+            elif info['name'] == 'KKEx':
+                self._read_kkex(part)
             else:
                 raise ValueError(f'Unsupported info {info["name"]}')
 
@@ -261,31 +264,23 @@ class KoikatuCharacter:
         coordinate_s = self._pack_coordinate()
         parameter_s = self._pack_parameter()
         status_s = self._pack_status()
-        chara_values = b"".join([
-            custom_s,
-            coordinate_s,
-            parameter_s,
-            status_s
-        ])
+        kkex_s = self._pack_kkex()
+
+        info_data = {
+            'Custom' : custom_s,
+            'Coordinate' : coordinate_s,
+            'Parameter' : parameter_s,
+            'Status' : status_s,
+            'KKEx' : kkex_s
+        }
+        chara_values = b"".join([info_data[key] for key in self.info_order])
 
         pos = 0
-        for i, n in enumerate(self.list_info["lstInfo"]):
-            if n["name"] == "Custom":
-                self.list_info["lstInfo"][i]["pos"] = pos
-                self.list_info["lstInfo"][i]["size"] = len(custom_s)
-                pos += len(custom_s)
-            elif n["name"] == "Coordinate":
-                self.list_info["lstInfo"][i]["pos"] = pos
-                self.list_info["lstInfo"][i]["size"] = len(coordinate_s)
-                pos += len(coordinate_s)
-            elif n["name"] == "Parameter":
-                self.list_info["lstInfo"][i]["pos"] = pos
-                self.list_info["lstInfo"][i]["size"] = len(parameter_s)
-                pos += len(parameter_s)
-            elif n["name"] == "Status":
-                self.list_info["lstInfo"][i]["pos"] = pos
-                self.list_info["lstInfo"][i]["size"] = len(status_s)
-                pos += len(status_s)
+        for i, key in enumerate(self.info_order):
+            self.list_info["lstInfo"][i]["pos"] = pos
+            self.list_info["lstInfo"][i]["size"] = len(info_data[key])
+            pos += len(info_data[key])
+
         list_info_s = msgpack.packb(self.list_info, use_single_float=True, use_bin_type=True)
 
         data = []
@@ -414,6 +409,12 @@ class KoikatuCharacter:
 
     def _pack_status(self):
         return msgpack.packb(self.status, use_single_float=True, use_bin_type=True)
+
+    def _read_kkex(self, data):
+        self.kkex = msgpack.unpackb(data, encoding='utf8')
+
+    def _pack_kkex(self):
+        return msgpack.packb(self.kkex, use_single_float=True, use_bin_type=True)
 
 
     def _read_additional(self, data):
