@@ -45,15 +45,15 @@ class PropertyPanel(ttk.Frame):
         label3.grid(row=row, column=0, sticky='E', columnspan=1)
         entry3.grid(row=row, column=1, sticky='W', columnspan=1)
 
-        values = (RM.res('male'), RM.res('female'))
-        label4 = ttk.Label(self, text=RM.res('sex'))
-        self._sex = tk.StringVar(value=values[character.sex])
-        entry4 = ttk.Combobox(self, values=values,
-                              textvariable=self._sex, state='readonly')
-        label4.grid(row=row, column=2, sticky="E", columnspan=1)
-        entry4.grid(row=row, column=3, sticky="W", columnspan=1)
-
         if character.sex == 1:
+            values = (RM.res('male'), RM.res('female'))
+            label4 = ttk.Label(self, text=RM.res('sex'))
+            self._sex = tk.StringVar(value=values[character.sex])
+            entry4 = ttk.Combobox(self, values=values,
+                                textvariable=self._sex, state='readonly')
+            label4.grid(row=row, column=2, sticky="E", columnspan=1)
+            entry4.grid(row=row, column=3, sticky="W", columnspan=1)
+            
             row = row + 1
             values = RM.res('personalities')
             label5 = ttk.Label(self, text=RM.res('personality'))
@@ -221,26 +221,27 @@ class CharacterPanel(ttk.Frame):
         chara.lastname = panel.lastname
         chara.nickname = panel.nickname
 
-        chara.personality = panel.personality
-        chara.weak_point = panel.weak_point
-        chara.answers = self.property_panel.answers
-        chara.denials = self.property_panel.denials
-        chara.attributes = self.property_panel.attributes
+        if chara.sex == 1:
+            chara.personality = panel.personality
+            chara.weak_point = panel.weak_point
+            chara.answers = self.property_panel.answers
+            chara.denials = self.property_panel.denials
+            chara.attributes = self.property_panel.attributes
 
-        panel = self.status_panel
-        chara.feeling = panel.feeling
-        chara.m_love  = panel.m_love
-        chara.h_count = panel.h_count
-        chara.koikatu = panel.koikatu
-        chara.lover = panel.relation
-        chara.date = panel.date
+            panel = self.status_panel
+            chara.feeling = panel.feeling
+            chara.m_love  = panel.m_love
+            chara.h_count = panel.h_count
+            chara.koikatu = panel.koikatu
+            chara.lover = panel.relation
+            chara.date = panel.date
 
-        ac = [
-            'mune', 'kokan', 'anal', 'siri', 'tikubi',
-            'kokan_piston', 'anal_piston', 'houshi'
-        ]
-        for name in ac:
-            chara.set_ac(name, panel.ac(name))
+            ac = [
+                'mune', 'kokan', 'anal', 'siri', 'tikubi',
+                'kokan_piston', 'anal_piston', 'houshi'
+            ]
+            for name in ac:
+                chara.set_ac(name, panel.ac(name))
 
         self.dirty = True
         return chara
