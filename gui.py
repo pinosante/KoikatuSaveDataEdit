@@ -53,7 +53,7 @@ class PropertyPanel(ttk.Frame):
                                 textvariable=self._sex, state='readonly')
             label4.grid(row=row, column=2, sticky="E", columnspan=1)
             entry4.grid(row=row, column=3, sticky="W", columnspan=1)
-            
+
             row = row + 1
             values = RM.res('personalities')
             label5 = ttk.Label(self, text=RM.res('personality'))
@@ -287,7 +287,7 @@ class App:
         self.panels = []
         for chara in self.save_data.characters:
             panel = CharacterPanel(self, frame.interior, chara)
-            panel.pack()
+            panel.pack(anchor='w')
             self.panels.append(panel)
 
         btn_frame = ttk.Frame(self.root)
