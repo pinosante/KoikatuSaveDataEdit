@@ -196,11 +196,13 @@ class CharacterPanel(ttk.Frame):
                               height=self.image.height())
         self.photo.grid(row=0, column=0, rowspan=3, padx=2, pady=2)
 
+        cols = 1 if character.sex == 1 else 2
         self.property_panel = PropertyPanel(self, character)
-        self.property_panel.grid(row=0, column=1, rowspan=1, padx=2, pady=2)
+        self.property_panel.grid(row=0, column=1, rowspan=1, columnspan=cols, padx=2, pady=2)
 
-        self.status_panel = StatusPanel(self, character)
-        self.status_panel.grid(row=0, column=2, rowspan=1, padx=4, pady=2, sticky='N')
+        if character.sex == 1:
+            self.status_panel = StatusPanel(self, character)
+            self.status_panel.grid(row=0, column=2, rowspan=1, padx=4, pady=2, sticky='N')
 
         self._load_btn = ttk.Button(self,
                                     text='Load Character Card',
