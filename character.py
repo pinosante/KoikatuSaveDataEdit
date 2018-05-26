@@ -49,6 +49,7 @@ class KoikatuCharacter:
         self.chara_datasize = struct.unpack("q", data.read(8))[0]
         self.chara_data = data.read(self.chara_datasize)
         self.info_order = []
+        self.kkex = None
         for info in self.list_info['lstInfo']:
             self.info_order.append(info['name'])
             start = info['pos']
@@ -264,15 +265,16 @@ class KoikatuCharacter:
         coordinate_s = self._pack_coordinate()
         parameter_s = self._pack_parameter()
         status_s = self._pack_status()
-        kkex_s = self._pack_kkex()
 
         info_data = {
             'Custom' : custom_s,
             'Coordinate' : coordinate_s,
             'Parameter' : parameter_s,
             'Status' : status_s,
-            'KKEx' : kkex_s
         }
+
+        if self.kkex is not None:
+            info_data['KKEx'] = self._pack_kkex()
         chara_values = b"".join([info_data[key] for key in self.info_order])
 
         pos = 0
