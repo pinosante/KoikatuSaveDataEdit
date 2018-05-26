@@ -53,52 +53,53 @@ class PropertyPanel(ttk.Frame):
         label4.grid(row=row, column=2, sticky="E", columnspan=1)
         entry4.grid(row=row, column=3, sticky="W", columnspan=1)
 
-        row = row + 1
-        values = RM.res('personalities')
-        label5 = ttk.Label(self, text=RM.res('personality'))
-        self._personality = tk.StringVar(value=values[character.personality])
-        entry5 = ttk.Combobox(self, values=values,
-                              textvariable=self._personality, state='readonly')
-        label5.grid(row=row, column=0, sticky="E", columnspan=1)
-        entry5.grid(row=row, column=1, sticky="W", columnspan=1)
+        if character.sex == 1:
+            row = row + 1
+            values = RM.res('personalities')
+            label5 = ttk.Label(self, text=RM.res('personality'))
+            self._personality = tk.StringVar(value=values[character.personality])
+            entry5 = ttk.Combobox(self, values=values,
+                                textvariable=self._personality, state='readonly')
+            label5.grid(row=row, column=0, sticky="E", columnspan=1)
+            entry5.grid(row=row, column=1, sticky="W", columnspan=1)
 
-        values = RM.res('weak_points')
-        label6 = ttk.Label(self, text=RM.res('weak_point'))
-        self._weak_point = tk.StringVar(value=values[character.weak_point])
-        entry6 = ttk.Combobox(self, values=values,
-                              textvariable=self._weak_point, state='readonly')
-        label6.grid(row=row, column=2, sticky="E", columnspan=1)
-        entry6.grid(row=row, column=3, sticky="W", columnspan=1)
+            values = RM.res('weak_points')
+            label6 = ttk.Label(self, text=RM.res('weak_point'))
+            self._weak_point = tk.StringVar(value=values[character.weak_point])
+            entry6 = ttk.Combobox(self, values=values,
+                                textvariable=self._weak_point, state='readonly')
+            label6.grid(row=row, column=2, sticky="E", columnspan=1)
+            entry6.grid(row=row, column=3, sticky="W", columnspan=1)
 
-        # answer
-        row = row + 1
-        self._answers = {}
-        frame = ttk.LabelFrame(self, text=RM.res('answer'))
-        for i, name in enumerate(character.answers.keys()):
-            self._answers[name] = self._make_boolean_prop(frame,
-                                                          RM.res(name),
-                                                          character.answers[name], i, 5)
-        frame.grid(row=row, column=0, columnspan=4, sticky='W')
+            # answer
+            row = row + 1
+            self._answers = {}
+            frame = ttk.LabelFrame(self, text=RM.res('answer'))
+            for i, name in enumerate(character.answers.keys()):
+                self._answers[name] = self._make_boolean_prop(frame,
+                                                            RM.res(name),
+                                                            character.answers[name], i, 5)
+            frame.grid(row=row, column=0, columnspan=4, sticky='W')
 
-        # denail
-        row = row + 1
-        self._denials = {}
-        frame = ttk.LabelFrame(self, text=RM.res('denial'))
-        for i, name in enumerate(character.denials.keys()):
-            self._denials[name] = self._make_boolean_prop(frame,
-                                                          RM.res(name),
-                                                          character.denials[name], i, 5)
-        frame.grid(row=row, column=0, columnspan=4, sticky='W')
+            # denail
+            row = row + 1
+            self._denials = {}
+            frame = ttk.LabelFrame(self, text=RM.res('denial'))
+            for i, name in enumerate(character.denials.keys()):
+                self._denials[name] = self._make_boolean_prop(frame,
+                                                            RM.res(name),
+                                                            character.denials[name], i, 5)
+            frame.grid(row=row, column=0, columnspan=4, sticky='W')
 
-        # attribute
-        row = row + 1
-        self._attributes = {}
-        frame = ttk.LabelFrame(self, text=RM.res('attribute'))
-        for i, name in enumerate(character.attributes.keys()):
-            self._attributes[name] = self._make_boolean_prop(frame,
-                                                             RM.res(name),
-                                                             character.attributes[name], i, 5)
-        frame.grid(row=row, column=0, columnspan=4, sticky='W')
+            # attribute
+            row = row + 1
+            self._attributes = {}
+            frame = ttk.LabelFrame(self, text=RM.res('attribute'))
+            for i, name in enumerate(character.attributes.keys()):
+                self._attributes[name] = self._make_boolean_prop(frame,
+                                                                RM.res(name),
+                                                                character.attributes[name], i, 5)
+            frame.grid(row=row, column=0, columnspan=4, sticky='W')
 
     @property
     def firstname(self):
@@ -196,13 +197,14 @@ class CharacterPanel(ttk.Frame):
                               height=self.image.height())
         self.photo.grid(row=0, column=0, rowspan=3, padx=2, pady=2)
 
-        cols = 1 if character.sex == 1 else 2
         self.property_panel = PropertyPanel(self, character)
-        self.property_panel.grid(row=0, column=1, rowspan=1, columnspan=cols, padx=2, pady=2)
-
         if character.sex == 1:
+            self.property_panel.grid(row=0, column=1, rowspan=1, padx=2, pady=2)
             self.status_panel = StatusPanel(self, character)
             self.status_panel.grid(row=0, column=2, rowspan=1, padx=4, pady=2, sticky='N')
+        else:
+            self.property_panel.grid(row=0, column=1, rowspan=1, columnspan=2, padx=2, pady=2, sticky='W')
+
 
         self._load_btn = ttk.Button(self,
                                     text='Load Character Card',
