@@ -300,8 +300,11 @@ class App:
         btn_frame.grid(row=1, column=0, pady=2, sticky='E')
 
         y_padding = 4
-        width = 1100
+        width = 1140
         height = 355 * 3 + btn_frame.winfo_height() + y_padding * 2
+        WindowsTaskbarHeight=48
+        if self.root.winfo_screenheight() - WindowsTaskbarHeight < height:
+            height = int(355 * 2.5) + btn_frame.winfo_height() + y_padding * 2
         self.root.geometry(f'{width}x{height}')
 
         def _configure(event):
