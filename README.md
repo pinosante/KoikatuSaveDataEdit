@@ -21,6 +21,11 @@ $ pip3 install pillow
 $ pip3 install msgpack
 ```
 
+## build
+
+This project is built with [PyInstaller](http://www.pyinstaller.org/) on Winodws.
+You have to install dependency packages(See requirements.txt) before building.
+
 
 ## thanks
 
