@@ -29,7 +29,7 @@ You have to install dependency packages(See requirements.txt) before build.
 
 ## thanks
 
-This program is using some codes from following repositories.
+This program uses some codes from following repositories.
 
 * https://github.com/106-/KoikatuCharaLoader
 * https://gist.github.com/EugeneBakin/76c8f9bcec5b390e45df
