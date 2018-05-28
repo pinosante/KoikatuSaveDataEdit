@@ -6,6 +6,7 @@ import shutil
 import sys
 import traceback
 from pathlib import Path
+import winreg
 
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -300,8 +301,11 @@ class App:
         btn_frame.grid(row=1, column=0, pady=2, sticky='E')
 
         y_padding = 4
-        width = 1100
+        width = 1140
         height = 355 * 3 + btn_frame.winfo_height() + y_padding * 2
+        WindowsTaskbarHeight=48
+        if self.root.winfo_screenheight() - WindowsTaskbarHeight < height:
+            height = int(355 * 2.5) + btn_frame.winfo_height() + y_padding * 2
         self.root.geometry(f'{width}x{height}')
 
         def _configure(event):
@@ -365,8 +369,12 @@ def main():
             out_filename = save_data
         resources = args.resources
     else:
+        try:
+            save_folder=get_default_save_folder()
+        except:
+            save_folder=Path.cwd()
         save_data = askopenfilename(filetype=[("koikatu save data", "*.dat")],
-                                    initialdir=Path.cwd())
+                                    initialdir=save_folder)
         print(save_data)
         if save_data is None or len(save_data) == 0:
             root.destroy()
@@ -378,6 +386,13 @@ def main():
     RM.load(resources)
     print('out:', out_filename)
     App(root, save_data, out_filename).run()
+
+def get_default_save_folder():
+    u"""get default save folder from windows registry """
+    path = r'Software\illusion\Koikatu\koikatu'
+    key = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER, path)
+    data, regtype = winreg.QueryValueEx(key, 'INSTALLDIR')
+    return data+'UserData\save\game'
 
 
 if __name__ == '__main__':
