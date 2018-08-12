@@ -18,7 +18,7 @@ class KoikatuSaveData:
 
 
     def _load(self, file):
-        self.b_unknown01 = file.read(7)
+        self.b_unknown01 = file.read(6)
         self.school = self._read_utf8_string(file)
 
         self.b_unknown02 = file.read(17)
