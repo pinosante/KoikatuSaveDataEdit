@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['gui.py'],
-             pathex=['F:\\game\\tools\\KoikatuSaveDataEdit'],
+             pathex=['G:\\HGAME\\戀活學園\\戀活存檔修改器\\KoikatuSaveDataEdit'],
              binaries=[],
              datas=[],
              hiddenimports=[],

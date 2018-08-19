@@ -18,7 +18,9 @@ class KoikatuSaveData:
 
 
     def _load(self, file):
-        self.b_unknown01 = file.read(6)
+        self.version_length = file.read(1)
+        self.b_version = file.read(int.from_bytes(self.version_length, byteorder='big'))
+
         self.school = self._read_utf8_string(file)
 
         self.b_unknown02 = file.read(17)
@@ -55,7 +57,8 @@ class KoikatuSaveData:
 
     def save(self, filename):
         with open(filename, 'wb') as out:
-            out.write(self.b_unknown01)
+            out.write(self.version_length)
+            out.write(self.b_version)
             out.write(self._pack_utf8_string(self.school))
             out.write(self.b_unknown02)
             for chara in self.characters:
