@@ -173,6 +173,30 @@ class KoikatuCharacter:
         self.parameter['nickname'] = value
 
     @property
+    def intelligence(self):
+        return self.parameter['intelligence']
+
+    @intelligence.setter
+    def intelligence(self, value):
+        self.parameter['intelligence'] = value     
+
+    @property
+    def physical(self):
+        return self.parameter['physical']
+
+    @physical.setter
+    def physical(self, value):
+        self.parameter['physical'] = value 
+
+    @property
+    def hentai(self):
+        return self.parameter['hentai']
+
+    @hentai.setter
+    def hentai(self, value):
+        self.parameter['hentai'] = value          
+
+    @property
     def sex(self):
         return self.parameter['sex']
 
@@ -290,7 +314,7 @@ class KoikatuCharacter:
             data = [self.card_png]
 
         if self.sex == 0:
-            bstr = self._pack_int(self.strength)
+            bstr = self._pack_int(int(self.strength))
         else:
             bstr = self._pack_byte(self._date) + b'\x00\x00\x00'
 
@@ -315,9 +339,9 @@ class KoikatuCharacter:
             self._pack_byte(self.lover),
             self._pack_byte(self.anger),
             self.unknown03,
-            self._pack_int(self.intelligence),
+            self._pack_int(int(self.intelligence)),
             bstr,
-            self._pack_int(self.ero),
+            self._pack_int(int(self.ero)),
             self.unknown06,
             self.ac['mune'],
             self.ac['kokan'],

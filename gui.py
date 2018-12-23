@@ -46,7 +46,27 @@ class PropertyPanel(ttk.Frame):
         label3.grid(row=row, column=0, sticky='E', columnspan=1)
         entry3.grid(row=row, column=1, sticky='W', columnspan=1)
 
-        if character.sex == 1:
+        if character.sex == 0:
+            label4 = ttk.Label(self, text=RM.res('intellect'))
+            self._intellect = tk.StringVar(value=character.intelligence)
+            entry4 = ttk.Entry(self, textvariable=self._intellect)
+            label4.grid(row=row, column=2, sticky='E', columnspan=1)
+            entry4.grid(row=row, column=3, sticky='W', columnspan=1)
+
+            row = row + 1
+            label5 = ttk.Label(self, text=RM.res('physical'))
+            self._physical = tk.StringVar(value=character.strength)
+            entry5 = ttk.Entry(self, textvariable=self._physical)
+            label5.grid(row=row, column=0, sticky='E', columnspan=1)
+            entry5.grid(row=row, column=1, sticky='W', columnspan=1)
+
+            label6 = ttk.Label(self, text=RM.res('hentai'))
+            self._hentai = tk.StringVar(value=character.ero)
+            entry6 = ttk.Entry(self, textvariable=self._hentai)
+            label6.grid(row=row, column=2, sticky='E', columnspan=1)
+            entry6.grid(row=row, column=3, sticky='W', columnspan=1)
+
+        elif character.sex == 1:
             values = (RM.res('male'), RM.res('female'))
             label4 = ttk.Label(self, text=RM.res('sex'))
             self._sex = tk.StringVar(value=values[character.sex])
@@ -109,10 +129,21 @@ class PropertyPanel(ttk.Frame):
     @property
     def lastname(self):
         return self._lastname.get()
-
+        
     @property
     def nickname(self):
         return self._nickname.get()
+
+    @property
+    def intellect(self):
+        return self._intellect.get()
+    @property
+    def physical(self):
+        return self._physical.get()
+    @property
+    def hentai(self):
+        return self._hentai.get()
+
 
     @property
     def sex(self):
@@ -154,6 +185,10 @@ class PropertyPanel(ttk.Frame):
         self._firstname.set(character.firstname)
         self._lastname.set(character.lastname)
         self._nickname.set(character.nickname)
+
+        self._intellect.set(character.intelligence)
+        self._physical.set(character.strength)
+        self._hentai.set(character.ero)
 
         self.personality = character.personality
         self.weak_point = character.weak_point
@@ -221,8 +256,12 @@ class CharacterPanel(ttk.Frame):
         chara.firstname = panel.firstname
         chara.lastname = panel.lastname
         chara.nickname = panel.nickname
+        if chara.sex == 0:
+            chara.intelligence = panel.intellect
+            chara.strength = panel.physical
+            chara.ero = panel.hentai
 
-        if chara.sex == 1:
+        elif chara.sex == 1:
             chara.personality = panel.personality
             chara.weak_point = panel.weak_point
             chara.answers = self.property_panel.answers
