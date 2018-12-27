@@ -20,11 +20,10 @@ class KoikatuSaveData:
     def _load(self, file):
         self.version_length = file.read(1)
         self.b_version = file.read(int.from_bytes(self.version_length, byteorder='big'))
-
+        self.version_num = self.b_version.decode("utf-8")
         self.school = self._read_utf8_string(file)
 
         self.b_unknown02 = file.read(17)
-
         # split character data
         chara_part = file.read()
         chara_data = chara_part.split(CHARA_HEADER)
@@ -33,7 +32,7 @@ class KoikatuSaveData:
         count = 0
         for data in chara_data:
             if data:
-                chara = KoikatuCharacter(io.BytesIO(CHARA_HEADER + data), False, count == 0)
+                chara = KoikatuCharacter(io.BytesIO(CHARA_HEADER + data), False, count == 0,self.version_num)
                 self.characters.append(chara)
                 count += 1
                 #print(f'chara: {chara.lastname} {chara.firstname} ({chara.nickname})')

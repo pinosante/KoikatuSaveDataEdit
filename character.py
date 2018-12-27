@@ -21,7 +21,8 @@ AC_MAP = [
 
 
 class KoikatuCharacter:
-    def __init__(self, data, with_card=True, skip_additional=False):
+    def __init__(self, data, with_card=True, skip_additional=False,master_version="0.0.0"):
+        self.master_version = master_version
         self.with_card = with_card
         if with_card:
             # read first PNG
@@ -74,6 +75,9 @@ class KoikatuCharacter:
         self.additional = {}
         self.ac = {}
         self.ex_data = b''
+        self.intimacy = 0
+        self.eventAfterDay = 0
+        self.isFirstGirlfriend = False
         if not with_card:
             # additional info
             len1 = self._read_byte(data)
@@ -146,7 +150,7 @@ class KoikatuCharacter:
                 self.ac['anal_piston'] = b''
 
             self._read_additional(data)
-
+  
 
     @property
     def firstname(self):
@@ -450,6 +454,9 @@ class KoikatuCharacter:
         if start == -1:
             self.before_additional = chunk
             self.ac['houshi'] = b''
+            self.eventAfterDay = 0
+            self.isFirstGirlfriend = 0
+            self.intimacy = 0
             self.after_additional = b''
             return
 
@@ -474,8 +481,14 @@ class KoikatuCharacter:
             self.additional[key] = value
 
         self.ac['houshi'] = stream.read(4)
-        self.after_additional = stream.read()
+        if self.master_version >= "0.0.7":
+            self.eventAfterDay = self._read_int(stream)
+            self.isFirstGirlfriend = self._read_byte(stream)
 
+        if self.master_version >= "1.0.1":
+            self.intimacy = self._read_int(stream)
+            
+        self.after_additional = stream.read()
 
     def _pack_additional(self):
         data = [self.before_additional]
@@ -486,6 +499,15 @@ class KoikatuCharacter:
             data.append(self._pack_int(self.additional[key]))
 
         data.append(self.ac['houshi'])
+
+        if self.sex == 1:
+            if self.master_version >= "0.0.7":
+                data.append(self._pack_int(int(self.eventAfterDay)))
+                data.append(self._pack_byte(self.isFirstGirlfriend))
+
+            if self.master_version >= "1.0.1":
+                data.append(self._pack_int(int(self.intimacy)))
+
         data.append(self.after_additional)
         return b''.join(data)
 

@@ -275,6 +275,7 @@ class CharacterPanel(ttk.Frame):
             chara.koikatu = panel.koikatu
             chara.lover = panel.relation
             chara.date = panel.date
+            chara.intimacy = panel.intimacy
 
             ac = [
                 'mune', 'kokan', 'anal', 'siri', 'tikubi',

@@ -38,6 +38,13 @@ class StatusPanel(ttk.Frame):
         entry.grid(row=row, column=3, sticky='W')
         
         row = 2
+        label = ttk.Label(self, text=RM.res('intimacy'))
+        self._intimacy = tk.StringVar(value=f'{chara.intimacy}')
+        entry = ttk.Entry(self, textvariable=self._intimacy)
+        label.grid(row=row, column=0, sticky='E')
+        entry.grid(row=row, column=1, sticky='W')
+
+        row = 3
         values = RM.res('koikatu')
         koikatu = self._get_value(values, chara.koikatu)
         label = ttk.Label(self, text=RM.res('club'))
@@ -57,7 +64,7 @@ class StatusPanel(ttk.Frame):
         combobox.grid(row=row, column=3, sticky='W')
 
         self._ac = {}
-        row = 3
+        row = 4
         label, cb = self._make_ac(chara, 'mune')
         label.grid(row=row, column=0, sticky='E')
         cb.grid(row=row, column=1, sticky='W')
@@ -66,7 +73,7 @@ class StatusPanel(ttk.Frame):
         label.grid(row=row, column=2, sticky='E')
         cb.grid(row=row, column=3, sticky='W')
 
-        row = 4
+        row = 5
         label, cb = self._make_ac(chara, 'anal')
         label.grid(row=row, column=0, sticky='E')
         cb.grid(row=row, column=1, sticky='W')
@@ -75,7 +82,7 @@ class StatusPanel(ttk.Frame):
         label.grid(row=row, column=2, sticky='E')
         cb.grid(row=row, column=3, sticky='W')
 
-        row = 5
+        row = 6
         label, cb = self._make_ac(chara, 'tikubi')
         label.grid(row=row, column=0, sticky='E')
         cb.grid(row=row, column=1, sticky='W')
@@ -84,7 +91,7 @@ class StatusPanel(ttk.Frame):
         label.grid(row=row, column=2, sticky='E')
         cb.grid(row=row, column=3, sticky='W')
 
-        row = 6
+        row = 7
         label, cb = self._make_ac(chara, 'anal_piston')
         label.grid(row=row, column=0, sticky='E')
         cb.grid(row=row, column=1, sticky='W')
@@ -119,6 +126,10 @@ class StatusPanel(ttk.Frame):
     @property
     def h_count(self):
         return int(self._h_count.get())
+
+    @property
+    def intimacy(self):
+        return int(self._intimacy.get())
 
     @property
     def relation(self):
