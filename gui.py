@@ -186,9 +186,11 @@ class PropertyPanel(ttk.Frame):
         self._lastname.set(character.lastname)
         self._nickname.set(character.nickname)
 
-        self._intellect.set(character.intelligence)
-        self._physical.set(character.strength)
-        self._hentai.set(character.ero)
+        if character.sex == 0:
+            self._intellect.set(character.intelligence)
+            self._physical.set(character.strength)
+            self._hentai.set(character.ero)
+        
 
         self.personality = character.personality
         self.weak_point = character.weak_point
@@ -200,7 +202,7 @@ class PropertyPanel(ttk.Frame):
             self._denials[key].set(character.denials[key])
 
         for key in self._attributes:
-            self._attributes[key].set(character.attributes[key])
+                self._attributes[key].set(character.attributes.setdefault(key,False))
 
 
     def _make_boolean_prop(self, frame, name, value, i, cols):
@@ -319,7 +321,7 @@ class App:
         self.filename = filename
         self.out_filename = out_filename
         self.save_data = KoikatuSaveData(filename)
-        self.card_dir = Path.cwd()
+        self.card_dir = get_default_chara_folder()
 
         style = ttk.Style()
         style.configure('.', padding='2 4 2 4')
@@ -345,7 +347,7 @@ class App:
         height = 355 * 3 + btn_frame.winfo_height() + y_padding * 2
         WindowsTaskbarHeight=48
         if self.root.winfo_screenheight() - WindowsTaskbarHeight < height:
-            height = int(355 * 2.5) + btn_frame.winfo_height() + y_padding * 2
+            height = int(355 * 2.5) + btn_frame.winfo_height() + y_padding * 2 -140
         self.root.geometry(f'{width}x{height}')
 
         def _configure(event):
@@ -434,6 +436,12 @@ def get_default_save_folder():
     data, regtype = winreg.QueryValueEx(key, 'INSTALLDIR')
     return data+'UserData\save\game'
 
+def get_default_chara_folder():
+    u"""get default save folder from windows registry """
+    path = r'Software\illusion\Koikatu\koikatu'
+    key = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER, path)
+    data, regtype = winreg.QueryValueEx(key, 'INSTALLDIR')
+    return data+'UserData\chara'
 
 if __name__ == '__main__':
     try:

@@ -114,7 +114,6 @@ class KoikatuCharacter:
             self.unknown03 = data.read(1)
 
             self.intelligence = self._read_int(data)
-
             if self.sex == 0:
                 self.strength = self._read_int(data)
                 self._date = 0
@@ -322,6 +321,9 @@ class KoikatuCharacter:
         else:
             bstr = self._pack_byte(self._date) + b'\x00\x00\x00'
 
+        self.parameter.setdefault('intelligence',0)
+
+
         data += [
             self._pack_int(self.product_no),
             self._pack_utf8_string(self.marker),
@@ -476,7 +478,6 @@ class KoikatuCharacter:
                 break
             key = stream.read(len_).decode('ascii')
             value = self._read_int(stream)
-
             self.additional_keys.append(key)
             self.additional[key] = value
 
