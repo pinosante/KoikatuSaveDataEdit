@@ -234,12 +234,11 @@ class CharacterPanel(ttk.Frame):
                               width=self.image.width(),
                               height=self.image.height())
         self.photo.grid(row=0, column=0, rowspan=3, padx=2, pady=2)
-
         self.property_panel = PropertyPanel(self, character)
         if character.sex == 1:
             self.property_panel.grid(row=0, column=1, rowspan=1, padx=2, pady=2)
             self.status_panel = StatusPanel(self, character)
-            self.status_panel.grid(row=0, column=2, rowspan=1, padx=4, pady=2, sticky='N')
+            self.status_panel.grid(row=1, column=1, rowspan=1, padx=4, pady=2, sticky='N')
         else:
             self.property_panel.grid(row=0, column=1, rowspan=1, columnspan=2, padx=2, pady=2, sticky='W')
 
@@ -321,17 +320,22 @@ class App:
         self.filename = filename
         self.out_filename = out_filename
         self.save_data = KoikatuSaveData(filename)
-        self.card_dir = get_default_chara_folder()
+        try:
+            self.card_dir=get_default_chara_folder()
+        except:
+            self.card_dir=Path.cwd()
 
         style = ttk.Style()
         style.configure('.', padding='2 4 2 4')
-
         frame = VerticalScrolledFrame(self.root)
+
         self.panels = []
+        row_count = 0
         for chara in self.save_data.characters:
-            panel = CharacterPanel(self, frame.interior, chara)
-            panel.pack(anchor='w')
-            self.panels.append(panel)
+                panel = CharacterPanel(self, frame.interior, chara)
+                panel.grid(row=int(row_count/2),column = int(row_count%2))
+                self.panels.append(panel)
+                row_count+=1
 
         btn_frame = ttk.Frame(self.root)
         save_btn = ttk.Button(btn_frame, text='Save & Quit', command=self.save_and_quit)
@@ -339,21 +343,23 @@ class App:
         quit_btn.pack(side='right', pady=2)
         save_btn.pack(side='right', pady=2)
 
+
         frame.grid(row=0, column=0)
         btn_frame.grid(row=1, column=0, pady=2, sticky='E')
 
         y_padding = 4
-        width = 1240
+        width = 1440
         height = 355 * 3 + btn_frame.winfo_height() + y_padding * 2
         WindowsTaskbarHeight=48
         if self.root.winfo_screenheight() - WindowsTaskbarHeight < height:
-            height = int(355 * 2.5) + btn_frame.winfo_height() + y_padding * 2 -140
+            height = int(355 * 2) + btn_frame.winfo_height() + y_padding * 2 
         self.root.geometry(f'{width}x{height}')
+        
+
 
         def _configure(event):
-            fh = self.root.winfo_height() - btn_frame.winfo_height() - y_padding
+            fh = self.root.winfo_height() - btn_frame.winfo_height() - y_padding 
             frame.canvas.config(height=fh)
-
         self.root.bind('<Configure>', _configure)
 
 

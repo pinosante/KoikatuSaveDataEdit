@@ -11,7 +11,7 @@ class StatusPanel(ttk.Frame):
         row = 0
         label = ttk.Label(self, text=RM.res('feeling'))
         self._feeling = tk.StringVar(value=f'{chara.feeling}')
-        entry = ttk.Entry(self, textvariable=self._feeling)
+        entry = ttk.Entry(self, textvariable=self._feeling,width=10)
         label.grid(row=row, column=0, sticky='E')
         entry.grid(row=row, column=1, sticky='W')
 
@@ -20,27 +20,27 @@ class StatusPanel(ttk.Frame):
         label = ttk.Label(self, text=RM.res('relation'))
         self._relation = tk.StringVar(value=lover)
         combobox = ttk.Combobox(self, values=values,
-                                textvariable=self._relation, state='readonly')
+                                textvariable=self._relation, state='readonly',width=10)
         label.grid(row=row, column=2, sticky='E')
         combobox.grid(row=row, column=3, sticky='W')
 
         row = 1
         label = ttk.Label(self, text=RM.res('m_love'))
         self._m_love = tk.StringVar(value=f'{chara.m_love}')
-        entry = ttk.Entry(self, textvariable=self._m_love)
+        entry = ttk.Entry(self, textvariable=self._m_love,width=10)
         label.grid(row=row, column=0, sticky='E')
         entry.grid(row=row, column=1, sticky='W')
 
         label = ttk.Label(self, text=RM.res('h_count'))
         self._h_count = tk.StringVar(value=f'{chara.h_count}')
-        entry = ttk.Entry(self, textvariable=self._h_count)
+        entry = ttk.Entry(self, textvariable=self._h_count,width=10)
         label.grid(row=row, column=2, sticky='E')
         entry.grid(row=row, column=3, sticky='W')
         
         row = 2
         label = ttk.Label(self, text=RM.res('intimacy'))
         self._intimacy = tk.StringVar(value=f'{chara.intimacy}')
-        entry = ttk.Entry(self, textvariable=self._intimacy)
+        entry = ttk.Entry(self, textvariable=self._intimacy,width=10)
         label.grid(row=row, column=0, sticky='E')
         entry.grid(row=row, column=1, sticky='W')
 
@@ -50,7 +50,7 @@ class StatusPanel(ttk.Frame):
         label = ttk.Label(self, text=RM.res('club'))
         self._koikatu = tk.StringVar(value=koikatu)
         combobox = ttk.Combobox(self, values=values,
-                                textvariable=self._koikatu, state='readonly')
+                                textvariable=self._koikatu, state='readonly',width=10)
         label.grid(row=row, column=0, sticky='E')
         combobox.grid(row=row, column=1, sticky='W')
 
@@ -59,7 +59,7 @@ class StatusPanel(ttk.Frame):
         label = ttk.Label(self, text=RM.res('date'))
         self._date = tk.StringVar(value=date)
         combobox = ttk.Combobox(self, values=values,
-                                textvariable=self._date, state='readonly')
+                                textvariable=self._date, state='readonly',width=10)
         label.grid(row=row, column=2, sticky='E')
         combobox.grid(row=row, column=3, sticky='W')
 
@@ -108,7 +108,7 @@ class StatusPanel(ttk.Frame):
         value = self._get_value(values, i)
         self._ac[name] = tk.StringVar(value=value)
         combobox = ttk.Combobox(self, values=values,
-                                textvariable=self._ac[name], state='readonly')
+                                textvariable=self._ac[name], state='readonly',width=10)
         return (label, combobox)
 
     def _get_value(self, values, index):
