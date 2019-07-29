@@ -7,7 +7,7 @@ from pathlib import Path
 
 from character import KoikatuCharacter
 
-CHARA_HEADER = b'\x64\x00\x00\x00\x12\xe3\x80\x90KoiKatuChara\xe3\x80\x91'
+CHARA_HEADER = b'\x64\x00\x00\x00\x14\xe3\x80\x90KoiKatuCharaSP\xe3\x80\x91'
 CHARA_SEPARATOR = b'\xff' * 8
 
 class KoikatuSaveData:
